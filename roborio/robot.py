@@ -14,7 +14,8 @@ from wpimath.controller import (
 )
 from components.driverstation import FROGStick, FROGBoxGunner
 from components.sensors import FROGGyro, FROGdar, FROGsonic, FROGColor
-from components.common import angleErrorToRotation
+
+from components.common import angleErrorToRotation, Rescale
 
 # robot characteristics
 # we are specifying inches and dividing by 12 to get feet,
@@ -198,31 +199,15 @@ class FROGbot(magicbot.MagicRobot):
             self.vT = math.copysign(new_twist**3, new_twist)
 
         # determine linear velocities
-        if (
-            self.autoDrive
-            and targetY
-            and not self.overrideTargeting
-        ):
-            targetY = targetY + 1
-            self.vX = math.copysign(
-                abs(
-                    (((targetY + 1) / 2) * self.speedFactor)
-                    + self.speedFactor / 2
-                ),
-                targetY,
-            )
+
+        self.vX, self.vY = (
+            math.copysign(self.xOrig**2, self.xOrig),
+            math.copysign(self.yOrig**2, self.yOrig),
+        )
+        if self.driverMode:
             self.driveMode = ROBOT_ORIENTED
-            # self.driveController = AUTO_DRIVE
-            self.vY = 0
         else:
-            self.vX, self.vY = (
-                math.copysign(self.xOrig**2, self.xOrig),
-                math.copysign(self.yOrig**2, self.yOrig),
-            )
-            if self.driverMode:
-                self.driveMode = ROBOT_ORIENTED
-            else:
-                self.driveMode = FIELD_ORIENTED
+            self.driveMode = FIELD_ORIENTED
 
         if self.vX or self.vY or self.vT or targetAngle is not None:
             if self.driveMode == FIELD_ORIENTED:
