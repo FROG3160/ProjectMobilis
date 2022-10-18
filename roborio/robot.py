@@ -14,7 +14,7 @@ from wpimath.controller import (
 )
 from components.driverstation import FROGStick, FROGBoxGunner
 from components.sensors import FROGGyro, FROGdar, FROGsonic, FROGColor
-
+from components.common import angleErrorToRotation
 
 # robot characteristics
 # we are specifying inches and dividing by 12 to get feet,
@@ -202,7 +202,6 @@ class FROGbot(magicbot.MagicRobot):
             self.autoDrive
             and targetY
             and not self.overrideTargeting
-            and self.objectTargeted == TARGET_CARGO
         ):
             targetY = targetY + 1
             self.vX = math.copysign(
