@@ -14,7 +14,8 @@ from wpimath.controller import (
 )
 from components.driverstation import FROGStick, FROGBoxGunner
 from components.sensors import FROGGyro, FROGdar, FROGsonic, FROGColor
-from components.common import Rescale
+
+from components.common import angleErrorToRotation, Rescale
 
 # robot characteristics
 # we are specifying inches and dividing by 12 to get feet,
