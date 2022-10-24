@@ -1,4 +1,5 @@
 import math
+from ctre import WPI_TalonFX
 
 class DriveUnit:
     def __init__(
@@ -80,3 +81,15 @@ class Rescale:
 
     def setNewMax(self, value: float):
         self.new_max = value
+
+class MotorUnit:
+    drive: WPI_TalonFX
+    steer: WPI_TalonFX
+    
+    # Motor
+
+    # Transmission
+    
+    # End effector
+
+    # Motor Config 
