@@ -13,7 +13,7 @@ class DriveUnit:
             diameter (float): Diameter of the attached wheel in meters
             cpr (int): Number of encoder counts per revolution
         """
-        self.gearing = math.prod(gear_stages)
+        self.gearing =  math.prod(gear_stages)
         self.motor_rpm = motor_rpm
         self.cpr = cpr
         self.circumference = math.pi * diameter
@@ -83,13 +83,43 @@ class Rescale:
         self.new_max = value
 
 class MotorUnit:
-    drive: WPI_TalonFX
-    steer: WPI_TalonFX
+    
+    motor = WPI_TalonFX
+    
+    def __init__(self, gear: list, p_value: float, i_value: float, d_value: float, wheel_diameter: float) -> None:
+        self.gearing =  math.prod(gear)
+        self.kp = p_value
+        self.ki = i_value
+        self.kd = d_value
+        self.circumference = math.pi * wheel_diameter
     
     # Motor
+    def speedToVelocity(self, speed: float) -> float:
+        """Converts linear speed to Falcon velocity
+        Args:
+            speed (float): desired linear speed in meters per second
+        Returns:
+            float: velocity in encoder counts per 100ms
+        """
+        wheel_rotations_sec = speed / self.circumference
+        motor_rotations_sec = wheel_rotations_sec / self.gearing
+        ticks_per_sec = motor_rotations_sec * self.cpr
+        return ticks_per_sec / 10
 
-    # Transmission
-    
-    # End effector
+    def velocityToSpeed(self, velocity: float) -> float:
+        """Converts Falcon velocity to linear speed
+        Args:
+            velocity (float): velocity in encoder counts per 100ms
+        Returns:
+            float: linear speed in meters per second
+        """
+        ticks_per_sec = velocity * 10
+        motor_rotations_sec = ticks_per_sec / self.cpr
+        wheel_rotations_sec = motor_rotations_sec * self.gearing
+        return wheel_rotations_sec * self.circumference
 
-    # Motor Config 
+        # Transmission ( Gear ratios )
+        kModuleDriveGearing = [(14.0 / 50.0), (27.0 / 17.0), (15.0 / 45.0)]
+        # End effector
+        kWheelDiameter = 0.1000125  # 3 15/16 inches in meters
+        # Motor Config ( For storing CAN IDs and PID values )
