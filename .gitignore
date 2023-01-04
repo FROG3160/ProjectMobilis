@@ -128,3 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .vscode/settings.json
+.installer_config
+simgui-ds.json
+.gitignore
+simgui-window.json
+simgui.json
+roborio/.deploy_cfg
