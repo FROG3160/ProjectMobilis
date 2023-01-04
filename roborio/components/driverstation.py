@@ -89,7 +89,7 @@ class FROGStick(Joystick):
         return val
 
     @feedback
-    def get_rotation(slef):
+    def get_rotation(self):
         return (
             self.getTwist() / self.ROTATION_DIVISOR
             if abs(self.getTwist()) > self.DEADBAND
