@@ -67,9 +67,7 @@ cfgSteerEncoder.absoluteSensorRange = AbsoluteSensorRange.Signed_PlusMinus180
 # Steer Motor base config
 cfgSteerMotor = TalonFXConfiguration()
 cfgSteerMotor.remoteFilter0.remoteSensorSource = RemoteSensorSource.CANCoder
-cfgSteerMotor.primaryPID = BaseTalonPIDSetConfiguration(
-    FeedbackDevice.RemoteSensor0
-)
+cfgSteerMotor.primaryPID = BaseTalonPIDSetConfiguration(FeedbackDevice.RemoteSensor0)
 cfgSteerMotor.slot0.kP = 1.2
 cfgSteerMotor.slot0.kI = 0.0001
 cfgSteerMotor.slot0.kD = 0.0
@@ -81,13 +79,12 @@ cfgSteerMotor.slot0.allowableClosedloopError = 5
 # Drive Motor base config
 cfgDriveMotor = TalonFXConfiguration()
 cfgDriveMotor.initializationStrategy = SensorInitializationStrategy.BootToZero
-cfgDriveMotor.primaryPID = BaseTalonPIDSetConfiguration(
-    FeedbackDevice.IntegratedSensor
-)
+cfgDriveMotor.primaryPID = BaseTalonPIDSetConfiguration(FeedbackDevice.IntegratedSensor)
 cfgDriveMotor.slot0.kP = 0.0
 cfgDriveMotor.slot0.kI = 0.0
 cfgDriveMotor.slot0.kD = 0.0
 cfgDriveMotor.slot0.kF = 0.04664  # $0.058
+
 
 def optimize_steer_angle(new_state: SwerveModuleState, current_radians):
     """This function takes the desired module state and the current
@@ -110,9 +107,7 @@ def optimize_steer_angle(new_state: SwerveModuleState, current_radians):
 
     # we are taking the radians which may be < -pi or > pi and constraining
     # it to the range of -pi to pi for our calculations
-    current_angle = math.atan2(
-        math.sin(current_radians), math.cos(current_radians)
-    )
+    current_angle = math.atan2(math.sin(current_radians), math.cos(current_radians))
 
     # if our offset is greater than 90 degrees, we need to flip 180 and reverse
     # speed.
@@ -220,9 +215,7 @@ class SwerveModule:
 
     @feedback
     def getCurrentSpeed(self) -> float:
-        return self.drive_unit.velocityToSpeed(
-            self.drive.getSelectedSensorVelocity()
-        )
+        return self.drive_unit.velocityToSpeed(self.drive.getSelectedSensorVelocity())
 
     # TODO: see TODO on getCurrentRotation()
     def getCurrentState(self):
@@ -246,9 +239,7 @@ class SwerveModule:
         # configure CANCoder
         # No worky: self.encoder.configAllSettings(cfgSteerEncoder)
         # TODO: ^^ see if we can use the configAllSettings method again
-        self.encoder.configAbsoluteSensorRange(
-            AbsoluteSensorRange.Signed_PlusMinus180
-        )
+        self.encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180)
         self.encoder.configSensorDirection(False)
         # adjust 0 degree point with offset
         self.encoder.configMagnetOffset(self.steerOffset)
@@ -259,9 +250,7 @@ class SwerveModule:
         self.resetRemoteEncoder()
 
         self.steer.configAllSettings(cfgSteerMotor)
-        self.steer.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_1_General, 250
-        )
+        self.steer.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 250)
         # define the remote CANCoder as Remote Feedback 0
         self.steer.configRemoteFeedbackFilter(
             self.encoder.getDeviceNumber(), RemoteSensorSource.CANCoder, 0
@@ -280,9 +269,7 @@ class SwerveModule:
         self.steer.setNeutralMode(NeutralMode.Brake)
         # configure drive motor
         self.drive.configAllSettings(cfgDriveMotor)
-        self.drive.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_1_General, 250
-        )
+        self.drive.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 250)
         self.drive.setInverted(TalonFXInvertType.Clockwise)
         self.drive.configClosedloopRamp(0.25)
 
@@ -317,6 +304,7 @@ class SwerveModule:
         else:
             self.drive.set(0)
 
+
 class SwerveChassis:
     swerveFrontLeft: SwerveModule
     swerveFrontRight: SwerveModule
@@ -338,7 +326,6 @@ class SwerveChassis:
     profiledMaxVelocity = tunable(math.pi * 8)
     profiledMaxAccel = tunable(math.pi * 8)
 
-    
     def __init__(self):
         self.enabled = False
         self.speeds = ChassisSpeeds(0, 0, 0)
@@ -363,16 +350,12 @@ class SwerveChassis:
         self.xSpeed = self.ySpeed = self.tSpeed = 0
         if vX:
             self.xSpeed = (
-                math.copysign(
-                    self.linearRescale(abs(vX)) + self.linear_offset, vX
-                )
+                math.copysign(self.linearRescale(abs(vX)) + self.linear_offset, vX)
                 * kMaxMetersPerSec
             )
         if vY:
             self.ySpeed = (
-                math.copysign(
-                    self.linearRescale(abs(vY)) + self.linear_offset, vY
-                )
+                math.copysign(self.linearRescale(abs(vY)) + self.linear_offset, vY)
                 * kMaxMetersPerSec
             )
         if target_angle is not None:
@@ -383,10 +366,7 @@ class SwerveChassis:
             # self.logger.info("Calculated Rotation: vT: %s, vTP: %s", vT, vTP)
         elif vT:
             self.tSpeed = (
-                math.copysign(
-                    self.rotationRescale(abs(vT)), vT
-                )
-                * kMaxRadiansPerSec
+                math.copysign(self.rotationRescale(abs(vT)), vT) * kMaxRadiansPerSec
             )
 
         self.speeds = ChassisSpeeds(
@@ -401,16 +381,12 @@ class SwerveChassis:
         self.xSpeed = self.ySpeed = self.tSpeed = 0
         if vX:
             self.xSpeed = (
-                math.copysign(
-                    self.linearRescale(abs(vX)) + self.linear_offset, vX
-                )
+                math.copysign(self.linearRescale(abs(vX)) + self.linear_offset, vX)
                 * kMaxMetersPerSec
             )
         if vY:
             self.ySpeed = (
-                math.copysign(
-                    self.linearRescale(abs(vY)) + self.linear_offset, vY
-                )
+                math.copysign(self.linearRescale(abs(vY)) + self.linear_offset, vY)
                 * kMaxMetersPerSec
             )
         if target_angle is not None:
@@ -421,10 +397,7 @@ class SwerveChassis:
             # self.logger.info("Calculated Rotation: vT: %s, vTP: %s", vT, vTP)
         elif vT:
             self.tSpeed = (
-                math.copysign(
-                    self.rotationRescale(abs(vT)), vT
-                )
-                * kMaxRadiansPerSec
+                math.copysign(self.rotationRescale(abs(vT)), vT) * kMaxRadiansPerSec
             )
 
         self.speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -476,9 +449,8 @@ class SwerveChassis:
         self.odometry.resetPosition(Pose2d(0, 0, 0), Rotation2d(0))
 
     def setCurrentSpeeds(self):
-        self.current_speeds = self.kinematics.toChassisSpeeds(
-            self.current_states
-        )
+        self.current_speeds = self.kinematics.toChassisSpeeds(self.current_states)
+
     def setup(self):
         # magicbot calls setup() when creating components
         # configure motors and other objects here.
@@ -529,7 +501,7 @@ class SwerveChassis:
         )
         self.profiledRotationController.enableContinuousInput(-math.pi, math.pi)
         self.profiledRotationController.reset(math.radians(self.gyro.getYaw()))
-        #self.profiledRotationController.setTolerance(math.radians(2.0))
+        # self.profiledRotationController.setTolerance(math.radians(2.0))
 
     def execute(self):
         # execute is called each iteration
@@ -539,14 +511,10 @@ class SwerveChassis:
             # pass in the commanded speeds and center of rotation
             # and get back the speed and angle values for each module
 
-            states = self.kinematics.toSwerveModuleStates(
-                self.speeds, self.center
-            )
+            states = self.kinematics.toSwerveModuleStates(self.speeds, self.center)
             # normalizing wheel speeds so they don't exceed the
             # maximum defined speed
-            states = self.kinematics.desaturateWheelSpeeds(
-                states, kMaxMetersPerSec
-            )
+            states = self.kinematics.desaturateWheelSpeeds(states, kMaxMetersPerSec)
 
             # pairing the module with the state it should get and
             # sending the state to the associated module
@@ -565,4 +533,3 @@ class SwerveChassis:
 
         else:
             pass
-        

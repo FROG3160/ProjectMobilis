@@ -12,8 +12,8 @@ from wpimath.controller import (
     HolonomicDriveController,
     ProfiledPIDControllerRadians,
 )
-from components.driverstation import FROGStick, FROGBoxGunner
-from components.sensors import FROGGyro, FROGdar, FROGsonic, FROGColor
+from components.driverstation import FROGStick
+from components.sensors import FROGGyro
 
 from components.common import angleErrorToRotation, Rescale
 
@@ -94,16 +94,16 @@ class FROGbot(magicbot.MagicRobot):
         )
 
         self.swerveFrontLeft_steerOffset = (
-            132.451172  # 133.330078  # 136.143  # 26.807  # 21.796875  # 18.5449219 #13.008
+            46.582  # 133.330078  # 136.143  # 26.807  # 21.796875  # 18.5449219 #13.008
         )
         self.swerveFrontRight_steerOffset = (
-            -149.765625  # -150.380859  # -146.602
+            -179.561  # -150.380859  # -146.602
         )  # 178.0664  # 177.1875  # 174.023438 #171.914
         self.swerveBackLeft_steerOffset = (
-            3.60351563  # 3.95507813  # -0.527  # 31.9921875  # 23.0273438  # 22.764
+            -149.854  # 3.95507813  # -0.527  # 31.9921875  # 23.0273438  # 22.764
         )
         self.swerveBackRight_steerOffset = (
-            -150.644531  # -150.117188  # -140.361
+            -2.373  # -150.117188  # -140.361
         )  # -43.33008  # -43.41797  # -43.242
 
 
@@ -113,7 +113,6 @@ class FROGbot(magicbot.MagicRobot):
         # self.driveStick = FROGStick(0, 0, 1, 3, 2)
         # config for Logitech Extreme 3D
         self.driveStick = FROGStick(0, 0, 1, 2, 3)
-        self.gunnerControl = FROGBoxGunner(1)
 
         self.field = wpilib.Field2d()
         # simulation already places field data in SmartDashboard
@@ -169,10 +168,6 @@ class FROGbot(magicbot.MagicRobot):
         self.xOrig = joystickAxisDeadband(self.driveStick.getFieldForward())
         self.yOrig = joystickAxisDeadband(self.driveStick.getFieldLeft())
 
-        # targetX = self.getSelectedTargetX()
-        targetY = self.getSelectedTargetY()
-        targetYaw = self.getSelectedTargetYaw()
-
         # ! If we are in autodrive and we have a target, use it
         # ! otherwise use manual drive
         # ! autodrive will need to not use field-oriented
@@ -187,11 +182,6 @@ class FROGbot(magicbot.MagicRobot):
         # determine twist/rotation
         if self.driveStick.getPOV() > -1:
             targetAngle = -(self.driveStick.getPOV() - 180)
-        elif self.targetLock and targetYaw and not self.overrideTargeting:
-            if self.firecontrol.isOnTarget():
-                self.vT = 0
-            else:
-                self.vT = angleErrorToRotation(-targetYaw)
         else:
             new_twist = joystickTwistDeadband(
                 self.driveStick.getFieldRotation()
